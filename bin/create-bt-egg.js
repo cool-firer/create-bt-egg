@@ -1,4 +1,3 @@
-console.log('i am creqted222');
 const https = require('https');
 const NODEURL = require('url');
 const fs = require('fs');
@@ -178,7 +177,7 @@ class Command {
       - cd ${this.targetDir}
       - npm install
       - npm start / npm run dev / npm test
-      
+
       Happy carrying bricks!
     `);
   }
