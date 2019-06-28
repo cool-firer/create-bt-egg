@@ -1,0 +1,17 @@
+{
+  "name": "create-bt-egg",
+  "version": "1.0.0",
+  "description": "",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "bin": "./bin/create-bt-egg.js",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "colors": "^1.3.3",
+    "globby": "^9.2.0",
+    "inquirer": "^6.4.1",
+    "istextorbinary": "^2.5.1"
+  }
+}

@@ -1,0 +1,10 @@
+logs/
+npm-debug.log
+node_modules/
+package-lock.json
+.idea/
+.DS_Store
+*.sw*
+*.un~
+.nyc_output/
+
