@@ -92,7 +92,9 @@ class Command {
 
     const src = path.join(__dirname, '..', 'boilerplate');
     const locals = await this.askForVariable();
-
+    if(!locals.name) {
+      locals.name = path.basename(this.targetDir);
+    }
     const btEggPackageInfo = await this.wget(BT_EGG_PATH_OPTIONS);
     locals.btEggVersion = btEggPackageInfo.version || '2.3.2';
     const regRes = TEST_KEY_REGEXP.exec(btEggPackageInfo.readme);
