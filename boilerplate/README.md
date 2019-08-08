@@ -1,6 +1,6 @@
-# bt-mall
+# {{name}}
 
-BT商城系统
+{{name}}
 
 ## QuickStart
 

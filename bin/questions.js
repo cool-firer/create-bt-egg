@@ -1,9 +1,19 @@
 'use strict';
 
 module.exports = {
+  // type: {
+  //   type: 'string',
+  //   description: 'boilerplate type',
+  // },
   name: {
     desc: 'project name',
     default: 'bt',
+  },
+  node: {
+    type: 'rawlist',
+    desc: '请选择一种node版本:',
+    choices:['8.16.0','10.16.1'],
+    default: '8.16.0',
   },
   description: {
     desc: 'project description',

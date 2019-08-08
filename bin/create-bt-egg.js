@@ -33,13 +33,13 @@ class Command {
       '_.autod.conf.js': '.autod.conf.js',
       '_.gitlab-ci.yml': '.gitlab-ci.yml',
       '_.npmrc': '.npmrc',
+      '_.dockerignore': '.dockerignore',
       '_.travis.yml': '.travis.yml'
     };
   }
 
   async run() {
     const argv = this.argv = this.getParser().parse(process.argv.slice(2) || []);
-    console.log(argv);
     this.targetDir = await this.getTargetDirectory();
 
     await this.processFiles(this.targetDir);
@@ -49,7 +49,6 @@ class Command {
 
   async getTargetDirectory() {
     const dir = '.';
-    console.log(this.cwd);
     let targetDir = path.resolve(this.cwd, dir);
     const force = false;
     const validate = dir => {
@@ -125,7 +124,8 @@ class Command {
 
   async askForVariable() {
     const keys = Object.keys(questions);
-    if (this.argv.simple) {
+    //以后多种模板类型扩展
+    if (this.argv.type && this.argv.type==='simple') {
       const result = {};
       keys.forEach(key => {
         result[key] = this.argv[key]||questions[key];
@@ -208,6 +208,7 @@ class Command {
       .alias('d', 'description')
       .alias('a', 'author')
       .alias('k', 'keys')
+      .alias('t', 'type')
       .version()
       .help();
   }
@@ -221,6 +222,6 @@ class Command {
 }
 
 (async function () {
-  const c = new Command({cwd:"/Users/liuwanjie/Dropbox/workspace/bt-work/lwj-bt-egg"});
+  const c = new Command({cwd:'/Users/liuwanjie/Dropbox/workspace/bt-work/lwj'});
   await c.run();
 })();

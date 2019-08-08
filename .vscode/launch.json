@@ -10,7 +10,6 @@
             "name": "Launch Program",
             "program": "${workspaceFolder}/bin/create-bt-egg.js",
             "args": [
-                "--simple",
                 "--name=wanjie"
             ]
         }
