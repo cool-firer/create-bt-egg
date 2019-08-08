@@ -1,6 +1,6 @@
 {
   "name": "create-bt-egg",
-  "version": "1.0.5",
+  "version": "1.0.9",
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -13,6 +13,7 @@
     "globby": "^9.2.0",
     "inquirer": "^6.4.1",
     "istextorbinary": "^2.5.1",
-    "yargs": "^11.1.0"
+    "yargs": "^11.1.0",
+    "mkdirp": "^0.5.1"
   }
 }

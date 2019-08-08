@@ -9,12 +9,12 @@ const isTextOrBinary = require('istextorbinary');
 const glob = require('globby');
 const yargs = require('yargs');
 const questions = require('./questions');
+const mkdirp = require('mkdirp');
 
 require('colors');
 
 const BT_EGG_PATH = 'https://registry-node.aliyun.com/org/1987849122053494/registry/btclass/@bt%2fbt-egg/latest';
 const BT_EGG_PATH_OPTIONS = NODEURL.parse(BT_EGG_PATH);
-const TEST_KEY_REGEXP = /#### test 环境公、私钥[\s\S]*?private_key.pem[\s\S]*?```([\s\S]*?)```/;
 
 
 class Command {
@@ -39,7 +39,7 @@ class Command {
   }
 
   async run() {
-    const argv = this.argv = this.getParser().parse(process.argv.slice(2) || []);
+    this.argv = this.getParser().parse(process.argv.slice(2) || []);
     this.targetDir = await this.getTargetDirectory();
 
     await this.processFiles(this.targetDir);
@@ -48,7 +48,7 @@ class Command {
   }
 
   async getTargetDirectory() {
-    const dir = '.';
+    const dir = this.argv._[0] || this.argv.dir || '.';
     let targetDir = path.resolve(this.cwd, dir);
     const force = false;
     const validate = dir => {
@@ -117,7 +117,7 @@ class Command {
         ? this.replaceTemplate(content.toString('utf8'), locals)
         : content;
 
-      fs.mkdirSync(path.dirname(to), { recursive: true });
+      mkdirp.sync(path.dirname(to));
       fs.writeFileSync(to, result);
     });
   }
@@ -138,7 +138,7 @@ class Command {
           type: question.type || 'input',
           name: key,
           message: question.description || question.desc,
-          default: question.default,
+          default: key==='name'?path.basename(this.cwd) : question.default,
           filter: question.filter,
           choices: question.choices,
         };
