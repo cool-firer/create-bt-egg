@@ -1,0 +1,66 @@
+image: docker:stable
+variables:
+  IMAGE_NAME: "${REGISTRY_URL}/btclass/{{name}}:"
+  KUBECONFIG: /etc/deploy/config
+
+before_script:
+  - echo "before change image name " $IMAGE_NAME
+  - if [ "$CI_COMMIT_TAG" = "" ]; then IMAGE_NAME=${IMAGE_NAME}test; else IMAGE_NAME=${IMAGE_NAME}${CI_COMMIT_TAG}; fi
+  - echo $IMAGE_NAME
+
+stages:
+  - docker_build
+  - deploy_test
+  - deploy_prod
+
+docker_build_job:
+  stage: docker_build
+  services:
+    - docker:dind
+  variables:
+    DOCKER_DRIVER: overlay
+    DOCKER_HOST: tcp://localhost:2375
+  tags:
+    - k8s-runner
+  only:
+    - playground
+    - tags
+  script:
+    - docker login -u $REGISTRY_USERNAME -p $REGISTRY_PASSWORD $REGISTRY_URL
+    - docker build --build-arg NPM_AUTH="$NPM_AUTH" -t $IMAGE_NAME .
+    - docker push $IMAGE_NAME
+    - docker rmi $IMAGE_NAME
+
+
+deploy_test_job:
+  image: lachlanevenson/k8s-kubectl
+  stage: deploy_test
+  tags:
+    - k8s-runner
+  only:
+    - playground
+  script:
+    - mkdir -p /etc/deploy
+    - echo $kube_config | base64 -d > $KUBECONFIG
+    - kubectl config use-context bt-test
+    - sed -i "s#APP_NAME#ms-bt-mall#g" deployment.yaml
+    - sed -i "s#NOW_TIME#$(date +"%Y-%m-%d %H:%M:%S")#g" deployment.yaml
+    - sed -i "s#EGG_SERVER_ENV_VALUE#test#g" deployment.yaml
+    - sed -i "s#IMAGE_NAME#$IMAGE_NAME#g" deployment.yaml
+    - cat deployment.yaml
+    - kubectl apply -f deployment.yaml
+
+deploy_prod_job:
+  image: lachlanevenson/k8s-kubectl
+  stage: deploy_prod
+  tags:
+    - k8s-runner
+  only:
+    - tags
+  script:
+    - mkdir -p /etc/deploy
+    - echo $kube_config | base64 -d > $KUBECONFIG
+    - kubectl config use-context bt-prod
+    - sed -i "s#EGG_SERVER_ENV_VALUE#prod#g" deployment.yaml
+    # - sed -i "s#IMAGE_NAME#$IMAGE_NAME#g" deployment.yaml
+    # - kubectl apply -f deployment.yaml

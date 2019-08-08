@@ -1,0 +1,58 @@
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  labels:
+    app: {{name}}
+  name: {{name}}
+  namespace: bt-v2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{name}}
+  template:
+    metadata:
+      labels:
+        app: {{name}}
+      annotations: 
+        ci-last-updated: 'NOW_TIME'
+    spec:
+      containers:
+      - name: {{name}}
+        env:
+        - name: EGG_SERVER_ENV
+          value: EGG_SERVER_ENV_VALUE
+        image: 'IMAGE_NAME'
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 7001
+        volumeMounts:
+        - mountPath: /app/config/pem
+          name: key-volume
+      imagePullSecrets:
+        - name: regcred
+      volumes:
+      - name: key-volume
+        secret:
+            secretName: bt-config-private-key
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{name}}
+  namespace: bt-v2
+  annotations:
+    prometheus.io/port: '7001'
+    prometheus.io/scrape: 'true'
+spec:
+  ports:
+    - name: http
+      port: 7001
+      protocol: TCP
+      targetPort: 7001
+  selector:
+    app: {{name}}
+  type: ClusterIP
+status:
+  loadBalancer: {}

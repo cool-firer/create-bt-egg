@@ -1,0 +1,74 @@
+openapi: 3.0.0
+info:
+  title: {{name}}路由文档
+  description: {{name}}路由文档
+  version: 1.0.0
+tags:
+  - name: System
+    description: 系统
+
+servers:
+  - url: http://127.0.0.1:7001
+  
+paths:
+  /alive:
+    get:
+      tags:
+        - System
+      summary: alive
+      description: alive
+      responses:
+        "200":
+          description: success
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: "#/components/schemas/SuccessResponse"
+
+components:
+  parameters:
+    page:
+      in: query
+      name: page
+      required: false
+      schema:
+        type: integer
+        minimum: 0
+      description: 页数，默认为0
+    limit:
+      in: query
+      name: limit
+      required: false
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+      description: 每页条数
+    needCount:
+      in: query
+      name: needCount
+      required: false
+      schema:
+        type: integer
+      description: 是否需要总数量
+    attributes:
+      in: query
+      name: attributes
+      required: false
+      schema:
+        type: string
+      description: 指定返回参数, 参数间用，隔开，可重命名，例： 'id AS userId, name, mobile' => userId:xxx, name:xxxx, mobile:13xxxxxxxxx
+  schemas:
+    SuccessResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          enum:
+            - 200
+        msg:
+          type: string
+          enum:
+            - success

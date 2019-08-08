@@ -7,6 +7,7 @@ const path = require('path');
 const inquirer = require('inquirer');
 const isTextOrBinary = require('istextorbinary');
 const glob = require('globby');
+const yargs = require('yargs');
 const questions = require('./questions');
 
 require('colors');
@@ -29,11 +30,16 @@ class Command {
       '_package.json': 'package.json',
       '_.eslintignore': '.eslintignore',
       '_.eslintrc': '.eslintrc',
+      '_.autod.conf.js': '.autod.conf.js',
+      '_.gitlab-ci.yml': '.gitlab-ci.yml',
       '_.npmrc': '.npmrc',
+      '_.travis.yml': '.travis.yml'
     };
   }
 
   async run() {
+    const argv = this.argv = this.getParser().parse(process.argv.slice(2) || []);
+    console.log(argv);
     this.targetDir = await this.getTargetDirectory();
 
     await this.processFiles(this.targetDir);
@@ -96,12 +102,7 @@ class Command {
       locals.name = path.basename(this.targetDir);
     }
     const btEggPackageInfo = await this.wget(BT_EGG_PATH_OPTIONS);
-    locals.btEggVersion = btEggPackageInfo.version || '2.3.2';
-    const regRes = TEST_KEY_REGEXP.exec(btEggPackageInfo.readme);
-    locals.test_private_key = '';
-    if (regRes && regRes.length >= 1) {
-      locals.test_private_key = regRes[1];
-    }
+    locals.btEggVersion = btEggPackageInfo.version || '2.3.4';
     // console.log('locals', locals);
 
     const files = glob.sync('**/*', { cwd: src, dot: true });
@@ -123,19 +124,27 @@ class Command {
   }
 
   async askForVariable() {
-
     const keys = Object.keys(questions);
-    return await inquirer.prompt(keys.map(key => {
-      const question = questions[key];
-      return {
-        type: question.type || 'input',
-        name: key,
-        message: question.description || question.desc,
-        default: question.default,
-        filter: question.filter,
-        choices: question.choices,
-      };
-    }));
+    if (this.argv.simple) {
+      const result = {};
+      keys.forEach(key => {
+        result[key] = this.argv[key]||questions[key];
+      });
+      return result;
+    } else {
+      return await inquirer.prompt(keys.map(key => {
+        const question = questions[key];
+        return {
+          type: question.type || 'input',
+          name: key,
+          message: question.description || question.desc,
+          default: question.default,
+          filter: question.filter,
+          choices: question.choices,
+        };
+      }));
+      
+    }
   }
 
   async wget(url) {
@@ -182,11 +191,26 @@ class Command {
       - npm install
       - npm start / npm run dev / npm test
 
-      Happy carrying bricks!
+      Happy carrying brick!
     `);
   }
 
-  
+  /**
+   * 获取传入参数
+   * @return {Object} yargs instance
+   */
+  getParser() {
+    return yargs
+      .usage('init bt-egg project from boilerplate.\nUsage: $0 [dir] --type=simple')
+      .options(questions)
+      .alias('h', 'help')
+      .alias('n', 'name')
+      .alias('d', 'description')
+      .alias('a', 'author')
+      .alias('k', 'keys')
+      .version()
+      .help();
+  }
 
   log() {
     const args = Array.prototype.slice.call(arguments);
@@ -197,6 +221,6 @@ class Command {
 }
 
 (async function () {
-  const c = new Command();
+  const c = new Command({cwd:"/Users/liuwanjie/Dropbox/workspace/bt-work/lwj-bt-egg"});
   await c.run();
 })();
