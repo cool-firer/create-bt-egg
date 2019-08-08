@@ -222,6 +222,6 @@ class Command {
 }
 
 (async function () {
-  const c = new Command({cwd:'/Users/liuwanjie/Dropbox/workspace/bt-work/lwj'});
+  const c = new Command();
   await c.run();
 })();
