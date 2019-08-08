@@ -49,7 +49,7 @@ class Command {
 
   async getTargetDirectory() {
     const dir = this.argv._[0] || this.argv.dir || '.';
-    let targetDir = path.resolve(this.cwd, dir);
+    let targetDir = this.targetDir = path.resolve(this.cwd, dir);
     const force = false;
     const validate = dir => {
       // create dir if not exist
@@ -138,7 +138,7 @@ class Command {
           type: question.type || 'input',
           name: key,
           message: question.description || question.desc,
-          default: key==='name'?path.basename(this.cwd) : question.default,
+          default: key === 'name'?path.basename(this.targetDir) : question.default,
           filter: question.filter,
           choices: question.choices,
         };

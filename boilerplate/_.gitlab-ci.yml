@@ -43,10 +43,10 @@ deploy_test_job:
     - mkdir -p /etc/deploy
     - echo $kube_config | base64 -d > $KUBECONFIG
     - kubectl config use-context bt-test
-    - sed -i "s#APP_NAME#ms-bt-mall#g" deployment.yaml
-    - sed -i "s#NOW_TIME#$(date +"%Y-%m-%d %H:%M:%S")#g" deployment.yaml
-    - sed -i "s#EGG_SERVER_ENV_VALUE#test#g" deployment.yaml
-    - sed -i "s#IMAGE_NAME#$IMAGE_NAME#g" deployment.yaml
+    - sed -i "s#{{NOW_TIME}}#$(date +"%Y-%m-%d %H:%M:%S")#g" deployment.yaml
+    - sed -i "s#{{EGG_SERVER_ENV_VALUE}}#test#g" deployment.yaml
+    - sed -i "s#{{EGG_WORKERS_VALUE}}#1#g" deployment.yaml
+    - sed -i "s#{{IMAGE_NAME}}#$IMAGE_NAME#g" deployment.yaml
     - cat deployment.yaml
     - kubectl apply -f deployment.yaml
 

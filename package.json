@@ -1,6 +1,6 @@
 {
   "name": "create-bt-egg",
-  "version": "1.0.9",
+  "version": "1.0.12",
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -14,6 +14,7 @@
     "inquirer": "^6.4.1",
     "istextorbinary": "^2.5.1",
     "yargs": "^11.1.0",
-    "mkdirp": "^0.5.1"
+    "mkdirp": "^0.5.1",
+    "npm-updater": "^3.0.3"
   }
 }
